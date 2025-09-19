@@ -1,0 +1,20 @@
+import gurobipy as gp
+
+m = gp.Model()
+
+x = m.addVar(name='x')
+a = m.addVar(name='a')
+h = m.addVar(name='h')
+
+C0 = m.addConstr(x<=20)
+C1 = m.addConstr(a<=0.5*x)
+C2 = m.addConstr(h<=0.5*x)
+C3 = m.addConstr(1*a + 0.75*h <= 8)
+
+nx = m.addConstr (x >= 0)
+na = m.addConstr (a >= 0)
+nh = m.addConstr (h >= 0)
+
+m.setObjective(10*x - 70*a + 50*h, gp.GRB.MAXIMIZE)
+
+m.optimize()
