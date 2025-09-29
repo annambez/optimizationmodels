@@ -1,0 +1,57 @@
+import gurobipy as gp 
+import random
+from random import randint
+
+m = gp.Model()
+
+T = random.randint(4,12)
+
+cash_mat = [random.randint(1,1000)for _ in range(T)]
+credit = random.randint(1,5)
+b = [random.randint(1,100) for _ in range(credit)]
+
+r1 = [round(random.uniform(1.05,1.20),2) for _ in range(credit)]
+r2 = [round(random.uniform(0.10,0.40),2) for _ in range(credit)]
+r3 = [round(random.uniform(0.05,0.20),2) for _ in range(credit)]
+
+print("r1:",r1)
+print("r2:",r2)
+print("r3:",r3)
+
+for i in range(credit): 
+    total = r1[i] + r2[i] + r3[i]
+    print(f"Credit {i+1}: r1+r2+r3 ={total}")
+
+r = round(random.uniform(0.10,0.10),2)
+print("r:",r)
+
+def D_mat(N,r):
+    D = [[0 for _ in range(T)] for _ in range(T)]
+    for i in range(T):
+        for j in range(i,T):
+            D[i][j] = round((1+r)**(j-i),2)
+    return D
+
+def M_mat(T, credit, r1, r2, r3):
+    if T <= 3:
+        raise ValueError("T must be greater than 3 to create a valid matrix.")
+    
+    cols = T - 3
+    M = [[0 for _ in range(cols)] for _ in range(T)]
+    
+    for i in range(credit):
+        for j in range(T):
+            for t in range(cols):
+                if t + 2 < cols:  # Ensure t + 2 is within bounds of cols
+                    M[j][t + 2] = -float(r2[i])
+                if t + 1 < cols:  # Ensure t + 1 is within bounds of cols
+                    M[j][t + 1] = -float(r1[i])
+                if t < cols:  # Ensure t is within bounds of cols
+                    M[j][t] = 1 + float(r3[i])
+    return M
+
+D_mat = D_mat(T,r)
+M_mat = M_mat(T,credit,r1,r2,r3)
+
+print("D=",D_mat)
+print("M=",M_mat)
