@@ -2,6 +2,8 @@ import gurobipy as gp
 import random
 from random import randint
 
+from gurobipy import GRB
+
 m = gp.Model()
 
 T = random.randint(4,12)
