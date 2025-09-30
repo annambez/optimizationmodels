@@ -1,0 +1,28 @@
+import gurobipy as gp 
+import numpy as np 
+import scipy
+
+from gurobipy import GRB
+
+m = gp.Model()
+
+p = np.array([20,25,30,35,40,45,50,55,60,65])
+c = np.array([30,34,43,47,49,53,60,62,64,66])
+y = np.array([36,39,42,45,51,55,63,64,66,70])
+
+x = m.addMVar(10, name='x')
+
+s=np.full(10,100)
+n = 10
+hi = m.addVar(name='hi')
+
+C0 = m.addConstr(0.69 * (x @ c) + 0.3 * (p @ x) >= 30000)
+nx = m.addConstr(x<=s)
+mx = m.addConstr(x>=0)
+mo = m.addConstr(hi == (s-x)@y)
+
+m.setObjective(hi, gp.GRB.MAXIMIZE)
+m.optimize()
+
+print(x.X)
+print(m.ObjVal)
